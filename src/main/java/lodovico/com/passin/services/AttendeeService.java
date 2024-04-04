@@ -16,8 +16,9 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class AttendeeService {
-    private AttendeeRepository attendeeRepository;
-    private CheckInRepository checkInRepository;
+    private final AttendeeRepository attendeeRepository;
+    private final CheckInRepository checkInRepository;
+
     public List<Attendee> getAllAttendeesFromEvent(String eventId) {
         List<Attendee> attendeesList = this.attendeeRepository.findByEventId(eventId);
         return attendeesList;
@@ -31,5 +32,7 @@ public class AttendeeService {
             LocalDateTime checkInAt = checkIn.isPresent() ? checkIn.get().getCreatedAt() : null;
             return new AttendeeDetails(attendee.getId(), attendee.getName(), attendee.getEmail(), attendee.getCreatedAt(), checkInAt)
         }).toList();
+
+        return new AttendeeListResponseDTO(attendeeDetails);
     }
 }
