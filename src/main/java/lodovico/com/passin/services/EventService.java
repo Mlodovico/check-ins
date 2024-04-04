@@ -24,7 +24,7 @@ public class EventService {
     private final AttendeeService attendeeService;
 
     public EventResponseDTO getEventDetail(String eventId) {
-        Event event = this.eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException("Event not found with ID:" + eventId));
+        Event event = this.getEvent(eventId);
         List<Attendee> attendeeList = this.attendeeService.getAllAttendeesFromEvent(eventId);
         return new EventResponseDTO(event, attendeeList.size());
     }
@@ -41,6 +41,10 @@ public class EventService {
         return new EventIdDTO(newEvent.getId());
     }
 
+    private Event getEvent(String eventId) {
+        return this.eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException("Event not found with ID:" + eventId));
+    };
+
     private String createSlug(String text) {
         String normalized = Normalizer.normalize(text, Normalizer.Form.NFD);
         return normalized.replaceAll("[\\p{InCOMBINING_DIACRITICAL_MARKS}]", "").replaceAll("^\\w\\s", "").replaceAll("\\s+", "").toLowerCase();
@@ -49,7 +53,7 @@ public class EventService {
     public AttendeeIdDTO registerAttendeeOnEvent(String eventId, AttendeeRequestDTO attendeeRequestDTO) {
         this.attendeeService.verifyAttendeeSubscription(attendeeRequestDTO.email(), eventId);
 
-        Event event = this.eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException("Event not found with ID:" + eventId));
+        Event event = this.getEvent(eventId);
         List<Attendee> attendeeList = this.attendeeService.getAllAttendeesFromEvent(eventId);
 
         if (event.getMaximumAttendees() <= attendeeList.size()) throw new EventFullException("Event is full");
@@ -62,6 +66,6 @@ public class EventService {
 
         this.attendeeService.registerAttendee(newAttendee);
 
-        return new AttendeeIdDTO(newAttendee.getId())
+        return new AttendeeIdDTO(newAttendee.getId());
     }
 }
