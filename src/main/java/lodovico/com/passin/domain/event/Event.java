@@ -18,44 +18,8 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    public String getId() {
-        return id;
-    }
-
     @Column(nullable = false)
     private String title;
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDetails() {
-        return details;
-    }
-
-    public void setDetails(String details) {
-        this.details = details;
-    }
-
-    public String getSlug() {
-        return slug;
-    }
-
-    public void setSlug(String slug) {
-        this.slug = slug;
-    }
-
-    public Integer getMaximumAttendees() {
-        return maximumAttendees;
-    }
-
-    public void setMaximumAttendees(Integer maximumAttendees) {
-        this.maximumAttendees = maximumAttendees;
-    }
 
     @Column(nullable = false)
     private String details;

@@ -19,11 +19,6 @@ public class EventService {
     private final EventRepository eventRepository;
     private final AttendeeRepository attendeeRepository;
 
-    public EventService(EventRepository eventRepository, AttendeeRepository attendeeRepository) {
-        this.eventRepository = eventRepository;
-        this.attendeeRepository = attendeeRepository;
-    }
-
     public EventResponseDTO getEventDetail(String eventId) {
         Event event = this.eventRepository.findById(eventId).orElseThrow(() -> new RuntimeException("Event not found with ID:" + eventId));
         List<Attendee> attendeeList = this.attendeeRepository.findByEventId(eventId);

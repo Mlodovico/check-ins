@@ -1,6 +1,9 @@
 package lodovico.com.passin.dto.event;
 
 import lodovico.com.passin.domain.event.Event;
+import lombok.Getter;
+
+@Getter
 public class EventResponseDTO {
     EventDetailDTO event;
 
