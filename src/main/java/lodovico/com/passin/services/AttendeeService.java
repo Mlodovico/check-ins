@@ -1,6 +1,7 @@
 package lodovico.com.passin.services;
 
 import lodovico.com.passin.domain.attendee.Attendee;
+import lodovico.com.passin.domain.attendee.exception.AttendeeAlreadyRegisteredException;
 import lodovico.com.passin.domain.checkin.CheckIn;
 import lodovico.com.passin.dto.attendee.AttendeeDetails;
 import lodovico.com.passin.dto.attendee.AttendeeListResponseDTO;
@@ -34,5 +35,16 @@ public class AttendeeService {
         }).toList();
 
         return new AttendeeListResponseDTO(attendeeDetails);
+    }
+
+    public Attendee registerAttendee(Attendee newAttendee) {
+        this.attendeeRepository.save(newAttendee);
+        return newAttendee;
+    }
+
+    public void verifyAttendeeSubscription(String email, String eventId) {
+        Optional<Attendee> isAttendeeRegistered = this.attendeeRepository.findByEventIdAndEmail(email, eventId);
+
+        if (isAttendeeRegistered.isPresent()) throw new AttendeeAlreadyRegisteredException("Attendee already registered on this event!")
     }
 }
