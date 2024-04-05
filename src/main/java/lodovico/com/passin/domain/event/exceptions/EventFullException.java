@@ -1,4 +1,4 @@
-package lodovico.com.passin.domain.attendee.exception;
+package lodovico.com.passin.domain.event.exceptions;
 
 public class EventFullException extends RuntimeException{
     public EventFullException(String message) {

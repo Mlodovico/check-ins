@@ -2,13 +2,17 @@ package lodovico.com.passin.services;
 
 import lodovico.com.passin.domain.attendee.Attendee;
 import lodovico.com.passin.domain.attendee.exception.AttendeeAlreadyRegisteredException;
+import lodovico.com.passin.domain.attendee.exception.AttendeeNotFoundException;
 import lodovico.com.passin.domain.checkin.CheckIn;
+import lodovico.com.passin.dto.attendee.AttendeeBadgeResponseDTO;
 import lodovico.com.passin.dto.attendee.AttendeeDetails;
 import lodovico.com.passin.dto.attendee.AttendeeListResponseDTO;
+import lodovico.com.passin.dto.attendee.AttendeeBadgeDTO;
 import lodovico.com.passin.repositories.AttendeeRepository;
 import lodovico.com.passin.repositories.CheckInRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,6 +44,15 @@ public class AttendeeService {
     public Attendee registerAttendee(Attendee newAttendee) {
         this.attendeeRepository.save(newAttendee);
         return newAttendee;
+    }
+
+    public AttendeeBadgeResponseDTO getAttendeeBadge(String attendeeId, UriComponentsBuilder uriComponentsBuilder) {
+        var uri = uriComponentsBuilder.path("/attendees/{attendeeId/check-in").buildAndExpand(attendeeId).toUri().toString();
+
+        Attendee attendee = this.attendeeRepository.findById(attendeeId).orElseThrow(() -> new AttendeeNotFoundException("Attendee not found with ID: " + attendeeId));
+        AttendeeBadgeDTO attendeeBadgeDTO = new AttendeeBadgeDTO(attendee.getName(), attendee.getEmail(), uri, attendee.getEvent().getId());
+
+        return new AttendeeBadgeResponseDTO(attendeeBadgeDTO);
     }
 
     public void verifyAttendeeSubscription(String email, String eventId) {

@@ -1,7 +1,7 @@
 package lodovico.com.passin.services;
 
 import lodovico.com.passin.domain.attendee.Attendee;
-import lodovico.com.passin.domain.attendee.exception.EventFullException;
+import lodovico.com.passin.domain.event.exceptions.EventFullException;
 import lodovico.com.passin.domain.event.Event;
 import lodovico.com.passin.domain.event.exceptions.EventNotFoundException;
 import lodovico.com.passin.dto.attendee.AttendeeIdDTO;
