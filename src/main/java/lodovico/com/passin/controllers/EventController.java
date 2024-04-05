@@ -1,6 +1,8 @@
 package lodovico.com.passin.controllers;
 
+import lodovico.com.passin.dto.attendee.AttendeeIdDTO;
 import lodovico.com.passin.dto.attendee.AttendeeListResponseDTO;
+import lodovico.com.passin.dto.attendee.AttendeeRequestDTO;
 import lodovico.com.passin.dto.event.EventIdDTO;
 import lodovico.com.passin.dto.event.EventRequestDTO;
 import lodovico.com.passin.dto.event.EventResponseDTO;
@@ -28,6 +30,14 @@ public class EventController {
         EventIdDTO eventIdDTO =  this.eventService.createEvent(body);
         var uri = uriComponentsBuilder.path("/events/{id}").buildAndExpand(eventIdDTO.eventId()).toUri();
         return ResponseEntity.created(uri).body(eventIdDTO);
+    }
+
+    @PostMapping("/{eventId}/attendees")
+    public ResponseEntity<AttendeeIdDTO> registerParticipant(@PathVariable String eventId, @RequestBody AttendeeRequestDTO body, UriComponentsBuilder uriComponentsBuilder) {
+        AttendeeIdDTO attendeeIdDTO = this.eventService.registerAttendeeOnEvent(eventId, body);
+        var uri = uriComponentsBuilder.path("/attendees/{attendeeId}/badge").buildAndExpand(attendeeIdDTO.attendeeId());
+
+        return ResponseEntity.created(uri.toUri()).body(attendeeIdDTO);
     }
 
     @GetMapping("/attendees/{id}")
