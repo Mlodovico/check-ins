@@ -22,7 +22,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AttendeeService {
     private final AttendeeRepository attendeeRepository;
-    private final CheckInRepository checkInRepository;
+    private final CheckInService checkInService;
+
+    private Attendee getAttendee(String attendeeId) {
+        return this.attendeeRepository.findById(attendeeId).orElseThrow(() -> new AttendeeNotFoundException("Attendee not found with ID: " + attendeeId));
+    }
 
     public List<Attendee> getAllAttendeesFromEvent(String eventId) {
         List<Attendee> attendeesList = this.attendeeRepository.findByEventId(eventId);
@@ -33,7 +37,7 @@ public class AttendeeService {
         List<Attendee> attendeeList = this.getAllAttendeesFromEvent(eventId);
 
         List<AttendeeDetails> attendeeDetails = attendeeList.stream().map(attendee -> {
-            Optional<CheckIn> checkIn = this.checkInRepository.findByAttendeeId(attendee.getId());
+            Optional<CheckIn> checkIn = this.checkInService.getCheckIn(attendee.getId());
             LocalDateTime checkInAt = checkIn.isPresent() ? checkIn.get().getCreatedAt() : null;
             return new AttendeeDetails(attendee.getId(), attendee.getName(), attendee.getEmail(), attendee.getCreatedAt(), checkInAt)
         }).toList();
@@ -49,7 +53,7 @@ public class AttendeeService {
     public AttendeeBadgeResponseDTO getAttendeeBadge(String attendeeId, UriComponentsBuilder uriComponentsBuilder) {
         var uri = uriComponentsBuilder.path("/attendees/{attendeeId/check-in").buildAndExpand(attendeeId).toUri().toString();
 
-        Attendee attendee = this.attendeeRepository.findById(attendeeId).orElseThrow(() -> new AttendeeNotFoundException("Attendee not found with ID: " + attendeeId));
+        Attendee attendee = this.getAttendee(attendeeId);
         AttendeeBadgeDTO attendeeBadgeDTO = new AttendeeBadgeDTO(attendee.getName(), attendee.getEmail(), uri, attendee.getEvent().getId());
 
         return new AttendeeBadgeResponseDTO(attendeeBadgeDTO);
@@ -59,5 +63,11 @@ public class AttendeeService {
         Optional<Attendee> isAttendeeRegistered = this.attendeeRepository.findByEventIdAndEmail(email, eventId);
 
         if (isAttendeeRegistered.isPresent()) throw new AttendeeAlreadyRegisteredException("Attendee already registered on this event!")
+    }
+    
+    public void checkInAttendee(String attendeeId) {
+        Attendee attendee = this.getAttendee(attendeeId);
+
+        this.checkInService.registerCheckIn(attendee);
     }
 }
